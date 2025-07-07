@@ -17,7 +17,7 @@ const Navbar = () => {
     }
   };
   return (
-    <nav className="navbar-bg flex justify-between items-center px-3 py-2">
+    <nav className="navbar-bg flex flex-col md:flex-row md:justify-between items-center gap-2 md:gap-0 px-3 py-2">
       <div className="text-2xl font-bold">
         <h1 className="text-white">JobHub</h1>
       </div>
