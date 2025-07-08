@@ -10,7 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AuthorizedRoute from "./components/AuthorizedRoute";
 import ApplicantProfile from "./components/ApplicantProfile";
 import EmployerProfile from "./components/EmployerProfile";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import EmployerDetails from "./pages/EmployerDetails";
 import ApplicantDetails from "./pages/ApplicantDetails";
 
