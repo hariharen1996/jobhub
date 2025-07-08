@@ -193,7 +193,7 @@ const Register = () => {
         </div>
         <button
           type="submit"
-          className="flex items-center  gap-2 px-4 py-2 rounded text-white cursor-pointer home-btn transition hover:bg-blue-600 border-2 border-blue-500"
+          className="px-4 py-2 rounded text-white cursor-pointer home-btn transition hover:bg-blue-600 border-2 border-blue-500"
         >
           Register
         </button>
