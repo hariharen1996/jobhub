@@ -1,10 +1,22 @@
 const JobCard = ({ job }) => {
   console.log(job);
+
   const postedDate = new Date(job.datePosted);
+  postedDate.setHours(0, 0, 0, 0);
+
+  console.log(postedDate)
+
   const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  console.log(currentDate)
+
   const daysAgo = Math.floor(
     (currentDate - postedDate) / (1000 * 60 * 60 * 24)
   );
+
+  console.log(daysAgo)
+
   return (
     <div
       className="job-card bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-blue-500"

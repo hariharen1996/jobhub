@@ -1,11 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
 export const fetchJobs = createAsyncThunk("jobs/fetchJobs", async () => {
   const querySnapshot = await getDocs(collection(db, "jobs"));
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 });
+
+export const addJob = createAsyncThunk("jobs/addJob", async (jobData) => {
+  const docRef = await addDoc(collection(db, "jobs"),jobData);
+  return { id: docRef.id, ...jobData }
+});
+
 
 const jobSlice = createSlice({
   name: "jobs",
@@ -33,7 +39,9 @@ const jobSlice = createSlice({
       .addCase(fetchJobs.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      });
+      }).addCase(addJob.fulfilled,(state,action) => {
+        state.jobs.push(action.payload)
+      })
   },
 });
 

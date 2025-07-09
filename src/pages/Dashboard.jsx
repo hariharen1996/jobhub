@@ -4,9 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchJobs, setCurrentPage } from "../redux/jobsSlice";
 import JobCard from "./JobCard";
 import Pagination from "./Pagination";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { jobs, status, currentPage, jobsPerPage } = useSelector(
     (state) => state.jobs
   );
@@ -15,10 +17,13 @@ const Dashboard = () => {
     dispatch(fetchJobs());
   }, [dispatch]);
 
+
+  const sortedJobs = [...jobs].sort((a,b) => new Date(b.datePosted) - new Date(a.datePosted))
+
   const totalPages = Math.ceil(jobs.length / jobsPerPage);
   const lastjob = currentPage * jobsPerPage;
   const firstJob = lastjob - jobsPerPage;
-  const currentJobs = jobs.slice(firstJob, lastjob);
+  const currentJobs = sortedJobs.slice(firstJob, lastjob);
 
   const handlePageChange = (page) => {
     dispatch(setCurrentPage(page));
@@ -26,8 +31,19 @@ const Dashboard = () => {
 
   return (
     <>
-      <h1 className="text-center text-3xl mt-5 font-bold underline">Dashboard</h1>
+      <h1 className="text-center text-3xl mt-5 font-bold underline">
+        Dashboard
+      </h1>
       <div className="p-4">
+        <div className="flex justify-between items-center pl-5 mb-6">
+          <button
+            onClick={() => navigate("/job-form")}
+            className="px-2 py-2 md:px-4 md:py-2 text-sm rounded text-white cursor-pointer home-btn transition hover:bg-blue-600 border-1 border-blue-500"
+          >
+            Create Job
+          </button>
+        </div>
+
         {status === "loading" ? (
           <div className="text-center py-8">Loading jobs...</div>
         ) : status === "failed" ? (
@@ -43,9 +59,12 @@ const Dashboard = () => {
         )}
       </div>
       {jobs.length > jobsPerPage && (
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       )}
-      
     </>
   );
 };

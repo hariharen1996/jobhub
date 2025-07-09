@@ -15,6 +15,7 @@ import EmployerDetails from "./pages/EmployerDetails";
 import ApplicantDetails from "./pages/ApplicantDetails";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
+import JobForm from "./components/JobForm";
 
 function App() {
   return (
@@ -83,6 +84,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ApplicantDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/job-form"
+            element={
+              <ProtectedRoute>
+                <JobForm />
               </ProtectedRoute>
             }
           />
