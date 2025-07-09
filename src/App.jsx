@@ -13,78 +13,82 @@ import EmployerProfile from "./components/EmployerProfile";
 import Dashboard from "./pages/Dashboard";
 import EmployerDetails from "./pages/EmployerDetails";
 import ApplicantDetails from "./pages/ApplicantDetails";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
 
 function App() {
   return (
-    <AuthProvider>
-      <Navbar />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <AuthorizedRoute>
-              <Register />
-            </AuthorizedRoute>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <AuthorizedRoute>
-              <Login />
-            </AuthorizedRoute>
-          }
-        />
-        <Route
-          path="/applicant-profile"
-          element={
-            <ProtectedRoute>
-              <ApplicantProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employer-profile"
-          element={
-            <ProtectedRoute>
-              <EmployerProfile />
-            </ProtectedRoute>
-          }
-        />
-         <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employer-details"
-          element={
-            <ProtectedRoute>
-              <EmployerDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/applicant-details"
-          element={
-            <ProtectedRoute>
-              <ApplicantDetails />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <Navbar />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <AuthorizedRoute>
+                <Register />
+              </AuthorizedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <AuthorizedRoute>
+                <Login />
+              </AuthorizedRoute>
+            }
+          />
+          <Route
+            path="/applicant-profile"
+            element={
+              <ProtectedRoute>
+                <ApplicantProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employer-profile"
+            element={
+              <ProtectedRoute>
+                <EmployerProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employer-details"
+            element={
+              <ProtectedRoute>
+                <EmployerDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/applicant-details"
+            element={
+              <ProtectedRoute>
+                <ApplicantDetails />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </Provider>
   );
 }
 
