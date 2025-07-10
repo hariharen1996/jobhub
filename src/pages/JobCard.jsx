@@ -1,21 +1,35 @@
-const JobCard = ({ job,onEdit,onDelete }) => {
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserRole } from "../redux/userSlice";
+
+const JobCard = ({ job, onEdit, onDelete }) => {
+  const { currentUser } = useContext(AuthContext);
+  const userRole = useSelector((state) => state.user.role);
+  const dispatch = useDispatch();
   console.log(job);
 
   const postedDate = new Date(job.datePosted);
   postedDate.setHours(0, 0, 0, 0);
 
-  console.log(postedDate)
+  console.log(postedDate);
 
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
-  console.log(currentDate)
+  console.log(currentDate);
 
   const daysAgo = Math.floor(
     (currentDate - postedDate) / (1000 * 60 * 60 * 24)
   );
 
-  console.log(daysAgo)
+  console.log(daysAgo);
+
+  useEffect(() => {
+    if (currentUser?.uid) {
+      dispatch(fetchUserRole(currentUser.uid));
+    }
+  }, [currentUser, dispatch]);
 
   return (
     <div
@@ -87,20 +101,16 @@ const JobCard = ({ job,onEdit,onDelete }) => {
             : `${daysAgo} day${daysAgo > 1 ? "s" : ""} ago`}
         </p>
       </div>
-      <div className="flex justify-between mt-4">
-        <button
-          onClick={onEdit}
-          className="text-blue-600 hover:underline"
-        >
-          Edit
-        </button>
-        <button
-          onClick={onDelete}
-          className="text-red-600 hover:underline"
-        >
-          Delete
-        </button>
-      </div>
+      {userRole === "employer" && (
+        <div className="flex justify-between mt-4">
+          <button onClick={onEdit} className="text-blue-600 hover:underline">
+            Edit
+          </button>
+          <button onClick={onDelete} className="text-red-600 hover:underline">
+            Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,32 +4,20 @@ import { AuthContext } from "../context/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../firebase/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserRole } from "../redux/userSlice";
 
 const Home = () => {
   const { currentUser } = useContext(AuthContext);
-  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userRole = useSelector((state) => state.user.role);
 
   useEffect(() => {
-    const fetchRole = async () => {
-      if (currentUser) {
-        try {
-          const docRef = doc(db, "users", currentUser.uid);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setUserRole(docSnap.data().role);
-          } else {
-            console.error("No user in firestore");
-          }
-        } catch (err) {
-          console.error("failed to fetch role", err);
-        }
-      }
-    };
-
-    fetchRole();
-  }, [currentUser]);
+    if (currentUser?.uid) {
+      dispatch(fetchUserRole(currentUser.uid));
+    }
+  }, [currentUser, dispatch]);
 
   const handleCreateProfile = () => {
     if (userRole === "applicant") {
@@ -59,12 +47,17 @@ const Home = () => {
               <i className="fas fa-chart-line"></i> Dashboard
             </button>
           </Link>
-          <Link to={userRole === "applicant" ? "/applicant-details" : "/employer-details"}>
+          <Link
+            to={
+              userRole === "applicant"
+                ? "/applicant-details"
+                : "/employer-details"
+            }
+          >
             <button className="flex items-center gap-2 px-2 py-2 md:px-4 md:py-2 text-sm rounded text-white cursor-pointer home-btn transition hover:bg-blue-600 border-1 border-blue-500">
               <i className="fa fa-eye"></i> View Profile
             </button>
           </Link>
-          
         </div>
       </div>
 

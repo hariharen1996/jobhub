@@ -8,9 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
-
 
 const EmployerProfile = () => {
   const { currentUser } = useContext(AuthContext);
@@ -172,14 +170,17 @@ const EmployerProfile = () => {
     <main className="applicant-container min-h-screen flex flex-col justify-center items-center px-4">
       <div className="pt-5">
         {message && (
-          <p
-            className={`text-center mb-4 ${
-              message.startsWith("✅") ? "text-green-600" : "text-red-500"
+          <div
+            className={`mb-4 text-sm px-4 py-2 rounded ${
+              message.includes("✅")
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
             }`}
           >
             {message}
-          </p>
+          </div>
         )}
+
         <form
           onSubmit={handleSubmit}
           className="bg-white shadow-md rounded px-8 pt-6 pb-6 mb-4 w-full max-w-md space-y-4"
