@@ -4,29 +4,34 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteJob,
   fetchJobs,
+  selectFilteredJobs,
   setCurrentPage,
   setEditJob,
 } from "../redux/jobsSlice";
 import JobCard from "./JobCard";
 import Pagination from "./Pagination";
 import { useNavigate } from "react-router-dom";
+import JobFilters from "../components/JobFilters";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { jobs, status, currentPage, jobsPerPage } = useSelector(
+  const [showFilters, setShowFilters] = useState(false);
+  const { status, currentPage, jobsPerPage } = useSelector(
     (state) => state.jobs
   );
+
+  const filteredJobs = useSelector(selectFilteredJobs);
 
   useEffect(() => {
     dispatch(fetchJobs());
   }, [dispatch]);
 
-  const sortedJobs = [...jobs].sort(
+  const sortedJobs = [...filteredJobs].sort(
     (a, b) => new Date(b.datePosted) - new Date(a.datePosted)
   );
 
-  const totalPages = Math.ceil(jobs.length / jobsPerPage);
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
   const lastjob = currentPage * jobsPerPage;
   const firstJob = lastjob - jobsPerPage;
   const currentJobs = sortedJobs.slice(firstJob, lastjob);
@@ -52,17 +57,25 @@ const Dashboard = () => {
         Dashboard
       </h1>
       <div className="p-4">
-        <div className="flex justify-between items-center pl-5 mb-6">
+        <div className="flex gap-2 pl-5 mb-6">
           <button
             onClick={() => {
               navigate("/job-form");
               dispatch(setEditJob(null));
             }}
-            className="px-2 py-2 md:px-4 md:py-2 text-sm rounded text-white cursor-pointer home-btn transition hover:bg-blue-600 border-1 border-blue-500"
+            className="flex items-center gap-2 px-2 py-2 md:px-4 md:py-2 text-sm rounded text-white cursor-pointer home-btn transition hover:bg-blue-600 border-1 border-blue-500"
           >
-            Create Job
+            <i class="fas fa-plus"></i> Add Job
+          </button>
+          <button
+            onClick={() => setShowFilters(true)}
+            className="flex items-center gap-2 px-2 py-2 md:px-4 md:py-2 text-sm rounded text-white cursor-pointer home-btn transition hover:bg-blue-600 border-1 border-blue-500"
+          >
+            <i class="fas fa-filter"></i> Filter
           </button>
         </div>
+
+        {showFilters && <JobFilters onClose={() => setShowFilters(false)} />}
 
         {status === "loading" ? (
           <div className="text-center py-8">Loading jobs...</div>
@@ -83,7 +96,7 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-      {jobs.length > jobsPerPage && (
+      {filteredJobs.length > jobsPerPage && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

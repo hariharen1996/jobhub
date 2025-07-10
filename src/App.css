@@ -31,3 +31,28 @@ body::after {
 .home-btn:hover {
   background-color: #3B82F6;
 }
+
+.filter-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 100%;
+    transition: all 0.5s ease;
+    overflow-y: scroll;
+    
+}
+
+.filter-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    max-width: 350px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    padding: 2rem;
+    transition: all 0.5s ease;
+    overflow: scroll;
+}
