@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
 export const fetchJobs = createAsyncThunk("jobs/fetchJobs", async () => {
@@ -12,6 +12,16 @@ export const addJob = createAsyncThunk("jobs/addJob", async (jobData) => {
   return { id: docRef.id, ...jobData }
 });
 
+export const updateJob = createAsyncThunk("jobs/updateJob", async ({id, ...jobData}) => {
+  await updateDoc(doc(db, "jobs",id),jobData);
+  return { id, ...jobData }
+});
+
+export const deleteJob = createAsyncThunk("jobs/deleteJob", async (id) => {
+  await deleteDoc(doc(db, "jobs",id));
+  return id
+});
+
 
 const jobSlice = createSlice({
   name: "jobs",
@@ -21,11 +31,18 @@ const jobSlice = createSlice({
     error: null,
     currentPage: 1,
     jobsPerPage: 6,
+    editJob: null
   },
   reducers: {
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
+    setEditJob: (state,action) => {
+      state.editJob = action.payload
+    },
+    clearEditJob: (state) => {
+      state.editJob = null
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -41,9 +58,16 @@ const jobSlice = createSlice({
         state.error = action.error.message;
       }).addCase(addJob.fulfilled,(state,action) => {
         state.jobs.push(action.payload)
+      }).addCase(updateJob.fulfilled,(state,action) => {
+        const index = state.jobs.findIndex(job => job.id === action.payload.id)
+        if(index !== -1){
+          state.jobs[index] = action.payload
+        }
+      }).addCase(deleteJob.fulfilled,(state,action) => {
+        state.jobs = state.jobs.filter(job => job.id !== action.payload)
       })
   },
 });
 
-export const { setCurrentPage } = jobSlice.actions;
+export const { setCurrentPage,setEditJob,clearEditJob } = jobSlice.actions;
 export default jobSlice.reducer;

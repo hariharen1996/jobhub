@@ -1,4 +1,4 @@
-const JobCard = ({ job }) => {
+const JobCard = ({ job,onEdit,onDelete }) => {
   console.log(job);
 
   const postedDate = new Date(job.datePosted);
@@ -86,6 +86,20 @@ const JobCard = ({ job }) => {
             ? "today"
             : `${daysAgo} day${daysAgo > 1 ? "s" : ""} ago`}
         </p>
+      </div>
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={onEdit}
+          className="text-blue-600 hover:underline"
+        >
+          Edit
+        </button>
+        <button
+          onClick={onDelete}
+          className="text-red-600 hover:underline"
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

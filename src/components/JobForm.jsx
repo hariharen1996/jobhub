@@ -1,10 +1,14 @@
 import { collection, addDoc } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase/firebase";
+import { addJob, clearEditJob, updateJob } from "../redux/jobsSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const JobForm = () => {
   const navigate = useNavigate();
+  const { status, editJob } = useSelector((state) => state.jobs);
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     jobTitle: "",
@@ -28,34 +32,58 @@ const JobForm = () => {
     }));
   };
 
+  useEffect(() => {
+    if (editJob) {
+      setFormData({
+        ...editJob,
+        jobSkills: Array.isArray(editJob.jobSkills)
+          ? editJob.jobSkills.join(", ")
+          : editJob.jobSkills,
+      });
+    }
+  }, [editJob]);
+
+  const handleCancel = () => {
+    dispatch(clearEditJob());
+    navigate("/dashboard");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
 
+    const jobData = {
+      ...formData,
+      jobSkills: formData.jobSkills.split(",").map((skill) => skill.trim()),
+      datePosted: new Date().toISOString(),
+      postedBy: user?.uid || "anonymous",
+    };
+
     try {
-      const jobData = {
-        ...formData,
-        jobSkills: formData.jobSkills.split(",").map((skill) => skill.trim()),
-        datePosted: new Date().toISOString(),
-        postedBy: user?.uid || "anonymous",
-      };
+      if (editJob) {
+         dispatch(updateJob({ id: editJob.id, ...jobData }));
+         setMessage("✅ Job updated successfully");
+      } else {
+         dispatch(addJob(jobData));
+         setMessage("✅ Job posted successfully");
+      }
 
-      await addDoc(collection(db, "jobs"), jobData);
-
-      setFormData({
-        jobTitle: "",
-        companyName: "",
-        experience: "",
-        location: "",
-        jobDescription: "",
-        jobSkills: "",
-        numberOfOpenings: 1,
-        workMode: "hybrid",
-        salary: "",
-      });
-
-      setMessage("✅ Job posted successfully");
+      if (!editJob) {
+        setFormData({
+          jobTitle: "",
+          companyName: "",
+          experience: "",
+          location: "",
+          jobDescription: "",
+          jobSkills: "",
+          numberOfOpenings: 1,
+          workMode: "hybrid",
+          salary: "",
+        });
+      }
+      
       setTimeout(() => {
+        dispatch(clearEditJob())
         navigate("/dashboard");
       }, 1500);
     } catch (err) {
@@ -66,7 +94,9 @@ const JobForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white shadow-md rounded-lg my-10">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Post a New Job</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">
+        {editJob ? "Edit Job" : "Post a New Job"}
+      </h2>
 
       {message && (
         <div
@@ -222,10 +252,24 @@ const JobForm = () => {
         <div className="text-right">
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            className="px-6 py-2 m-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            disabled={status === "loading"}
           >
-            Post Job
+            {status === "loading"
+              ? "Processing..."
+              : editJob
+              ? "Update Job"
+              : "Post Job"}
           </button>
+          {editJob && (
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="px-6 py-2 m-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </form>
     </div>
